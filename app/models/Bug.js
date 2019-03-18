@@ -7,9 +7,15 @@ let bugSchema = new Schema({
         unique : true,
         index : true
     },
+    bugTitle : {
+        type : String
+    },
+    bugDesc : {
+        type : String
+    },
     bugStatus : {
         type : String,
-        default : 'backlog'
+        default : 'Backlog'
     },
     reporter : {
         type : String

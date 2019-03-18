@@ -6,22 +6,74 @@ const responseGenerator = require('../libs/responseLib');
 
 let createIssue = (req,res) => {
     let tempWatchers = [];
-    tempWatchers.push(req.params.reporter);
-    if(req.params.assignee){
-        tempWatchers.push(req.params.assignee);
+    tempWatchers.push(req.body.reporter);
+    if(req.body.assignee && req.body.assignee!=req.body.reporter){
+        tempWatchers.push(req.body.assignee);
     }
     let newIssue = new bugModel({
         bugId : shortid.generate(),
-        bugStatus : req.params.bugStatus,
-        reporter : req.params.reporter,
-        reporterId : req.params.reporterId,
-        assignee : req.params.assignee,
-        assigneeId : req.params.assigneeId,
+        bugTitle : req.body.bugTitle,
+        bugDesc : req.body.bugDesc,
+        bugStatus : 'Backlog',
+        reporter : req.body.reporter,
+        reporterId : req.body.reporterId,
+        assignee : req.body.assignee,
+        assigneeId : req.body.assigneeId,
         createdOn : Date.now(),
         watchers : tempWatchers
     });
+    newIssue.save((err,result)=>{
+        if(err){
+            console.log(err);
+            let response = responseGenerator.generate(err,'Issue Created',503,null);
+            res.send(response);
+        }
+        else{
+            let resultObj = result.toObject();
+            delete resultObj._id;
+            delete resultObj.__v;
+            let response = responseGenerator.generate(null,'Issue Created',200,resultObj);
+            res.send(response);
+        }
+    })
+}
+
+let getIssuesAssignedToUser = (req,res) => {
+    bugModel.find({'assigneeId' : req.params.userId})
+    .select('-_id -__v')
+    .lean().exec((err,result)=>{
+        if(err){
+            let response = responseGenerator.generate(err,'Database Error',503,null);
+            res.send(response);
+        }
+        else if(result == '' || result == undefined){
+            let response = responseGenerator.generate(null,'No issues Assigned to user',404,result);
+            res.send(response);
+        }
+        else {
+            let response = responseGenerator.generate(null,'Success',200,result);
+            res.send(response);
+        }
+    })
+}
+
+let getIssuesDesc = (req,res) => {
+    bugModel.findOne({'bugId' : req.params.bugId})
+    .select('-_id -__v')
+    .lean().exec((err,result)=>{
+        if(err){
+            let response = responseGenerator.generate(err,'Database Error',503,null);
+            res.send(response);
+        }
+        else {
+            let response = responseGenerator.generate(null,'Success',200,result);
+            res.send(response);
+        }
+    })
 }
 
 module.exports = {
-    createIssue : createIssue
+    createIssue : createIssue,
+    getIssuesAssignedToUser : getIssuesAssignedToUser,
+    getIssuesDesc : getIssuesDesc
 }
