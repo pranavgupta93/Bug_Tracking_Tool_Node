@@ -11,6 +11,7 @@ module.exports.setRouter=(app)=>{
     app.post(`${baseUrl}/create`,bugController.createIssue);
     app.get(`${baseUrl}/assigned/:userId`,bugController.getIssuesAssignedToUser);
     app.get(`${baseUrl}/:bugId`,bugController.getIssuesDesc);
+    app.put(`${baseUrl}/:bugId`,bugController.updateIssueDesc);
     // app.get(`${baseUrl}/all`,auth.isAuthorized,userController.getAllUsers);
     // app.get(`${baseUrl}/user/:id`,auth.isAuthorized,userController.getSingleUser);
     // app.post(`${baseUrl}/signup`,userController.signUp);
