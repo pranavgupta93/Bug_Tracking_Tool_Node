@@ -8,7 +8,7 @@ module.exports.setRouter=(app)=>{
     app.get("/",function(req,res){
         res.send("hello")
     })
-    app.get(`${baseUrl}/all`,auth.isAuthorized,userController.getAllUsers);
+    app.get(`${baseUrl}/all`,userController.getAllUsers);
     app.get(`${baseUrl}/user/:id`,auth.isAuthorized,userController.getSingleUser);
     app.post(`${baseUrl}/signup`,userController.signUp);
     app.post(`${baseUrl}/login`,userController.logIn);

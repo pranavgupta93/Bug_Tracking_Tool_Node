@@ -20,6 +20,7 @@ let createIssue = (req, res) => {
         assignee: req.body.assignee,
         assigneeId: req.body.assigneeId,
         createdOn: Date.now(),
+        modifiedOn: Date.now(),
         watchers: tempWatchers
     });
     newIssue.save((err, result) => {
@@ -73,12 +74,30 @@ let getIssuesDesc = (req, res) => {
 }
 
 let updateIssueDesc = (req, res) => {
-    bugModel.findOneAndUpdate({ bugId: req.body.bugId }, req.body, {new:true},(err, result) => {
+    req.body.modifiedOn = Date.now();
+    bugModel.findOneAndUpdate({ bugId: req.params.bugId }, req.body, {new:true},(err, result) => {
         if (err) {
             let response = responseGenerator.generate(err, 'Database Error', 503, null);
             res.send(response);
         }
         else {
+            console.log(result);
+            let response = responseGenerator.generate(null, 'Success', 200, result);
+            res.send(response);
+        }
+    })
+}
+
+let searchIssues = (req,res) => {
+    console.log(req.body);
+    bugModel.find({$text: { $search: req.body.searchText }},(err, result) => {
+        if (err) {
+            console.log("err"+err);
+            let response = responseGenerator.generate(err, 'Database Error', 503, null);
+            res.send(response);
+        }
+        else {
+            console.log("result"+result);
             let response = responseGenerator.generate(null, 'Success', 200, result);
             res.send(response);
         }
@@ -89,5 +108,6 @@ module.exports = {
     createIssue: createIssue,
     getIssuesAssignedToUser: getIssuesAssignedToUser,
     getIssuesDesc: getIssuesDesc,
-    updateIssueDesc: updateIssueDesc
+    updateIssueDesc: updateIssueDesc,
+    searchIssues: searchIssues
 }
