@@ -81,7 +81,7 @@ let updateIssueDesc = (req, res) => {
             res.send(response);
         }
         else {
-            console.log(result);
+          //  console.log(result);
             let response = responseGenerator.generate(null, 'Success', 200, result);
             res.send(response);
         }
