@@ -9,13 +9,8 @@ module.exports.setRouter=(app)=>{
         res.send("hello")
     });
     app.post(`${baseUrl}/create`,bugController.createIssue);
-    app.get(`${baseUrl}/assigned/:userId`,bugController.getIssuesAssignedToUser);
-    app.get(`${baseUrl}/:bugId`,bugController.getIssuesDesc);
-    app.put(`${baseUrl}/:bugId`,bugController.updateIssueDesc);
-    app.post(`${baseUrl}/search`,bugController.searchIssues);
-    // app.get(`${baseUrl}/all`,auth.isAuthorized,userController.getAllUsers);
-    // app.get(`${baseUrl}/user/:id`,auth.isAuthorized,userController.getSingleUser);
-    // app.post(`${baseUrl}/signup`,userController.signUp);
-    // app.post(`${baseUrl}/login`,userController.logIn);
-    // app.post(`${baseUrl}/logout`,auth.isAuthorized,userController.logout);
+    app.get(`${baseUrl}/assigned/:userId`,auth.isAuthorized,bugController.getIssuesAssignedToUser);
+    app.get(`${baseUrl}/:bugId`,auth.isAuthorized,bugController.getIssuesDesc);
+    app.put(`${baseUrl}/:bugId`,auth.isAuthorized,bugController.updateIssueDesc);
+    app.post(`${baseUrl}/search`,auth.isAuthorized,bugController.searchIssues);
 }

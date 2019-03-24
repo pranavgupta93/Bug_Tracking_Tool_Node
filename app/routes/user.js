@@ -12,5 +12,5 @@ module.exports.setRouter=(app)=>{
     app.get(`${baseUrl}/user/:id`,auth.isAuthorized,userController.getSingleUser);
     app.post(`${baseUrl}/signup`,userController.signUp);
     app.post(`${baseUrl}/login`,userController.logIn);
-    app.post(`${baseUrl}/logout`,auth.isAuthorized,userController.logout);
+    app.post(`${baseUrl}/logout`,userController.logout);
 }

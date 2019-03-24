@@ -11,10 +11,10 @@ let setServer = (server) => {
             console.log(data+ 'joined a room');
             socket.join(data);
         });
-        socket.on('bugUpdate',(args)=>{
-            args.forEach(element => {
-                console.log(element);
-                socket.in(element).emit(element,"Update done room");
+        socket.on('bugUpdate',(data)=>{
+            data.watchers.forEach(element => {
+                console.log(data);
+                socket.in(element).emit(element, data.message);
                 // socket.emit(element,"Update done");
             });
         })

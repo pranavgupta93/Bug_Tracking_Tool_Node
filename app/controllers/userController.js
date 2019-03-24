@@ -184,7 +184,7 @@ let logIn = (req, res) => {
                                 // console.log('line 185');
                                 // console.log(token1);
                                 let response = {
-                                    token: newToken.authToken,
+                                    authToken: newToken.authToken,
                                     userId: newToken.userId,
                                     fullName: token1.userDetails.fullName
                                 }
@@ -197,6 +197,7 @@ let logIn = (req, res) => {
                         // console.log('else save token');
                        // console.log// console.log(token1);
                         result.authToken = token1.token;
+                        result.tokenSecret = token1.tokenSecret
                       // console.log result.fullName = token1.userDetails.fullName;
                         // console.log result.tokenSecret=token1.tokenSecret;
                         result.tokenGenerationTime = Date.now();
@@ -231,20 +232,23 @@ let logIn = (req, res) => {
         })
         .catch((err) => {
             let response = responseGenerator.generate(err, 'Unable to Authorize', 401, null);
-            res.send(response)
+            res.send(response);
         }
         );
 }
 let logout = (req, res) => {
-    Auth.findOneAndRemove({ userId: req.user.userId }, (err, authModelResult) => {
+    Auth.findOneAndRemove({ userId: req.body.userId }, (err, authModelResult) => {
         if (err) {
-            res.send("Internal error");
+            let response = responseGenerator.generate(err, 'Internal Error', 401, null);
+            res.send(response)
         }
         else if (authModelResult == '' || authModelResult == null) {
-            res.send("Already Logged Out");
+            let response = responseGenerator.generate(null, 'Already logged out', 200, null);
+            res.send(response);
         }
         else {
-            res.send("Logged out successfully");
+            let response = responseGenerator.generate(null, 'logged out', 200, null);
+            res.send(response);
         }
     })
 }

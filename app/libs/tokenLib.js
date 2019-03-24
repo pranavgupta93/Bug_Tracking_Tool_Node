@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const shortid = require('shortid')
-const secretKey = 'someVeryRandomStringThatNobodyCanGuess';
+const secretKey = 'pranavgupta93';
 let generateToken=((data,cb)=>{
     try{
         console.log("generate token lib")
@@ -9,7 +9,7 @@ let generateToken=((data,cb)=>{
             iat: Date.now(),
             exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24),
             sub: 'authToken',
-            iss: 'edChat',
+            iss: 'bugTracking',
             data: data
           }
           let tokenDetails = {

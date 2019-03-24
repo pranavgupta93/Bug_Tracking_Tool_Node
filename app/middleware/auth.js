@@ -4,7 +4,7 @@ const token = require('./../libs/tokenLib');
 const responseGenerator = require('./../libs/responseLib');
 
 let isAuthorized=(req,res,next)=>{
-
+    // console.log(req.headers);
     if(req.header('authToken')){
         authModel.findOne({authToken:req.header('authToken')},(err,authDetails)=>{
             if(err){
