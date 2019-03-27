@@ -4,6 +4,14 @@ const token = require('../libs/tokenLib')
 const bugModel = mongoose.model('Bug');
 const responseGenerator = require('../libs/responseLib');
 
+/**
+ * Logs new Issue
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object of issue details.
+ */
 let createIssue = (req, res) => {
     let tempWatchers = [];
     tempWatchers.push(req.body.reporter);
@@ -39,12 +47,20 @@ let createIssue = (req, res) => {
     })
 }
 
+/**
+ * Fetch all the issues assigned to user
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {Array} The array of issue objects assigned to user.
+ */
 let getIssuesAssignedToUser = (req, res) => {
     bugModel.find({ 'assigneeId': req.params.userId })
         .select('-_id -__v')
         .lean().exec((err, result) => {
             if (err) {
-                let response = responseGenerator.generate(err, 'Database Error', 503, null);
+                let response = responseGenerator.generate(err, 'Internal Error', 503, null);
                 res.send(response);
             }
             else if (result == '' || result == undefined) {
@@ -58,6 +74,14 @@ let getIssuesAssignedToUser = (req, res) => {
         })
 }
 
+/**
+ * Gets the full description of a given issue
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object of issue details.
+ */
 let getIssuesDesc = (req, res) => {
     bugModel.findOne({ 'bugId': req.params.bugId })
         .select('-_id -__v')
@@ -73,6 +97,14 @@ let getIssuesDesc = (req, res) => {
         })
 }
 
+/**
+ * Updates issue description
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The updated object of issue details.
+ */
 let updateIssueDesc = (req, res) => {
     req.body.modifiedOn = Date.now();
     bugModel.findOneAndUpdate({ bugId: req.params.bugId }, req.body, {new:true},(err, result) => {
@@ -88,6 +120,14 @@ let updateIssueDesc = (req, res) => {
     })
 }
 
+/**
+ * Search issues
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {Array} The array of issue objects.
+ */
 let searchIssues = (req,res) => {
     console.log(req.body);
     bugModel.find({$text: { $search: req.body.searchText }},(err, result) => {

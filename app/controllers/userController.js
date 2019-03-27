@@ -5,6 +5,15 @@ const UserModel = mongoose.model('User');
 const Auth = mongoose.model('AuthModel');
 const hashPassword = require('../libs/generatePasswordLib');
 const responseGenerator = require('../libs/responseLib');
+
+/**
+ * Fetches all users from database.
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {Array} The array of all users.
+ */
 let getAllUsers = (req, res) => {
     UserModel.find().select('fullName userId -_id').lean()
         .exec((err, result) => {
@@ -20,6 +29,14 @@ let getAllUsers = (req, res) => {
         });
 }
 
+/**
+ * Fetches single user from database.
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object of user details.
+ */
 let getSingleUser = (req, res) => {
     UserModel.findOne({ 'userId': req.params.id })
         .exec((err, result) => {
@@ -32,6 +49,14 @@ let getSingleUser = (req, res) => {
         })
 }
 
+/**
+ * Registers new User
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object of user details.
+ */
 let signUp = (req, res) => {
     // console.log("inside signup");
     let validateUserInput = () => {
@@ -104,6 +129,15 @@ let signUp = (req, res) => {
         });
 }
 
+
+/**
+ * User Login
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object of user details and auth Token.
+ */
 let logIn = (req, res) => {
     let validateUserInput = () => {
         return new Promise((resolve, reject) => {
@@ -236,6 +270,15 @@ let logIn = (req, res) => {
         }
         );
 }
+
+/**
+ * Logs out the user
+ *
+ * @author Pranav Gupta <pranavgupta93@gmail.com>
+ * @param {object} req the request parameter containing headers and url/body parameters.
+ * @param {object} res the response parameter for sending response to the client.
+ * @return {object} The object containing success message of successful logout.
+ */
 let logout = (req, res) => {
     Auth.findOneAndRemove({ userId: req.body.userId }, (err, authModelResult) => {
         if (err) {

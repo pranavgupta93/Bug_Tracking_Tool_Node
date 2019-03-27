@@ -1,0 +1,16 @@
+{
+  "name": "Bug Tracking tool",
+  "version": "0.0.1",
+  "description": "Documentation for the Bug Tracking tool",
+  "title": "Bug Tracking Tool APIs",
+  "url": "http://localhost:3000",
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2019-03-27T16:53:10.767Z",
+    "url": "http://apidocjs.com",
+    "version": "0.17.7"
+  }
+}
