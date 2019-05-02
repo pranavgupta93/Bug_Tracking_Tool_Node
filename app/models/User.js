@@ -34,6 +34,10 @@ let userSchema= new Schema({
       createdOn :{
         type:Date,
         default:""
+      },
+      resetPassword :{
+        type: Boolean,
+        default: false
       }
 });
 

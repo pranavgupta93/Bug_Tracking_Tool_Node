@@ -5,7 +5,11 @@ appConfig.allowedCorsOrigin = "*";
 appConfig.env = "dev";
 appConfig.db = {
     uri: 'mongodb://127.0.0.1:27017/jira'
-  }
+  };
+appConfig.mail = {
+    user: '',
+    pass: ''
+};
 appConfig.apiVersion = '/api/v1';
 
 
@@ -14,5 +18,6 @@ module.exports = {
     allowedCorsOrigin: appConfig.allowedCorsOrigin,
     environment: appConfig.env,
     db :appConfig.db,
-    apiVersion : appConfig.apiVersion
+    apiVersion : appConfig.apiVersion,
+    mail: appConfig.mail
 };

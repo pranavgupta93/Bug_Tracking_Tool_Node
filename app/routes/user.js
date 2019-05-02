@@ -123,4 +123,7 @@ module.exports.setRouter=(app)=>{
 	    "data": null
 	   }
 	 */
+
+	app.post(`${baseUrl}/forgotPassword`, userController.forgotPassword);
+	app.post(`${baseUrl}/changePassword`, userController.changePassword);
 }

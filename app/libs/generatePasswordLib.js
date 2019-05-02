@@ -18,7 +18,12 @@ let comparePassword=(plainPassword,hash,cb)=>{
     })
 }
 
+let generateRandomPassword = () =>{
+    return Math.random().toString(36).slice(2);
+}
+
 module.exports={
     hashPassword:hashPassword,
-    comparePassword:comparePassword
+    comparePassword:comparePassword,
+    generateRandomPassword: generateRandomPassword
 }

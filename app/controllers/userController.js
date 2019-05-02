@@ -5,7 +5,8 @@ const UserModel = mongoose.model('User');
 const Auth = mongoose.model('AuthModel');
 const hashPassword = require('../libs/generatePasswordLib');
 const responseGenerator = require('../libs/responseLib');
-
+const nodemailer = require('nodemailer');
+const appconfig = require('../../config/appConfig');
 /**
  * Fetches all users from database.
  *
@@ -220,7 +221,8 @@ let logIn = (req, res) => {
                                 let response = {
                                     authToken: newToken.authToken,
                                     userId: newToken.userId,
-                                    fullName: token1.userDetails.fullName
+                                    fullName: token1.userDetails.fullName,
+                                    resetPassword: token1.userDetails.resetPassword
                                 }
                                 resolve(response);
                             }
@@ -296,10 +298,136 @@ let logout = (req, res) => {
     })
 }
 
+let forgotPassword = (req, res) => {
+     let newPassword = hashPassword.generateRandomPassword();
+     let newHashPassword = hashPassword.hashPassword(newPassword);
+    let validateEmail = () => {
+        return new Promise((resolve,reject)=>{
+            UserModel.findOne({email: req.body.email},(err, result)=>{
+                if(err){
+                    reject('DB error');
+                    
+                }
+                else if (result === null || result === undefined)
+                {
+                    reject('User Not Found');
+                }
+                else {
+                   // console.log(result);
+                    resolve(result);
+                }
+            })
+        })
+    }
+    let updateExistingPassword =(result) => {
+        return new Promise((resolve,reject) => {
+            result.password = newHashPassword;
+            result.resetPassword = true;
+            console.log(result);
+            result.save((err, result)=>{
+                if(err){
+                    console.log('DB err');
+                    reject(err);
+                }
+                else{
+                    resolve(result);
+                }
+            });
+        })
+    }
+    let sendPasswordRecoveryMail = (result) =>{
+       return new Promise((resolve,reject)=>{
+        var mailOptions = {
+            from: '"Password Recovery" <pranavprojects1@gmail.com>',
+            to: req.body.email,
+            subject: 'Password Recovery ',
+            html: 'Dear '+ result.firstName +',' + '<br></br> Please use password '+ newPassword + ' for login into the application. Please change your password once you login.' + '<br></br> NOTE: This is an auto generated mail.'
+        };
+       
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                   user: appconfig.mail.user,
+                   pass: appconfig.mail.pass
+               }
+           });
+
+           transporter.sendMail(mailOptions, (err, info)=>{
+               if(err){
+                   reject(err);
+               }
+               else{
+                   resolve(info);
+               }
+           })
+       })
+    }
+    validateEmail(req,res)
+    .then(updateExistingPassword)
+    .then(sendPasswordRecoveryMail)
+    .then((result) => {
+        let response = responseGenerator.generate(null,'Success',200,result);
+        res.send(response);
+        console.log(res);
+    }).catch((err) => {
+        let response = responseGenerator.generate(err,'Error Occured', 503, null);
+        res.send(response);
+        console.log(err);
+    })
+    
+    
+}
+
+let changePassword = (req, res) => {
+    let validateExistingPassword = () => {
+        return new Promise((resolve, reject)=>{
+            UserModel.findOne({userId : req.body.userId},(err, result) => {
+                if(err) {
+                    reject('DB error');
+                }
+                else {
+                 hashPassword.comparePassword(req.body.password, result.password, (err,match) => {
+                     if(err){
+                         reject('DB Password');
+                     }
+                     else if(match) {
+                         console.log(result);
+                         result.password = hashPassword.hashPassword(req.body.newPassword);
+                         result.resetPassword = false;
+                         result.save((err, result) => {
+                             if(err){
+                                 reject('Incorrect Password');
+                             }
+                             else{
+                                 resolve('Password updated');
+                             }
+                         })
+                     }
+                     else {
+                        reject('Incorrect Password');
+                         
+                     }
+                 })
+                }
+             });
+        })
+    }
+    validateExistingPassword(req,res).then(result => {
+        let response = responseGenerator.generate(null, result, 200, null);
+        res.send(response);
+    })
+    .catch(err => {
+        let response = responseGenerator.generate(null, err, 503, null);
+        res.send(response);
+    })
+}
+
 module.exports = {
     getAllUsers: getAllUsers,
     getSingleUser: getSingleUser,
     signUp: signUp,
     logIn: logIn,
-    logout: logout
+    logout: logout,
+    forgotPassword: forgotPassword,
+    changePassword: changePassword
 }
